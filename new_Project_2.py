@@ -1,12 +1,16 @@
+import json
+import os
+import pandas as pd
 def printMenu():                         
-    print("1. Save a new Entry ")
+    print("1. Save a new entry ")
     print("2. search by ID ")
     print("3. Print ages average ")
     print("4. Print all names ")
     print("5. Print all IDs ")
     print("6. Print all entries ") 
     print("7. Print users by index ")
-    print("8. exit ")
+    print("8. save all data ")
+    print("9 exit ")
     user_choice = input ("Please enter your choice: ")
     return user_choice
 
@@ -78,9 +82,28 @@ def printUsersByIndex(users_list,users_dict):
        id = users_list[choose_index]
        printElegant(users_dict, id) 
         
+def saveAllData(users_dict):
+    path = "/Users/ofek_matlov/Desktop/python_new/"
+    output = []
+    json_path = path + "ofek.json"
+    if not os.path.exists(json_path):
+        print("Error: path is not exist :" + json_path)
+        return
+    with open(json_path) as json_file:
+        header_line = json.load(json_file)
+        if len(header_line) < 3:
+            print("Error: must be have 3 line ")
+            return
+    for i in users_dict:
+        new_user = {}
+        new_user[header_line[0]] = i
+        new_user[header_line[1]] = users_dict[i]["Name"]     
+        new_user[header_line[2]] = users_dict[i]["Age"]
+        output.append(new_user)
 
-
-
+    output_file_name = input("Please enter output file name: ")
+    user_dict_df = pd.DataFrame(output)
+    user_dict_df.to_csv(path + output_file_name, index = False)
 
 def main():
     sum = 0
@@ -105,6 +128,8 @@ def main():
         elif user_choice == "7":
             printUsersByIndex(users_list, users_dict)
         elif user_choice == "8":
+            saveAllData(users_dict)    
+        elif user_choice == "9":
             exit_input = input("Are you sure? (y/n)")
             if exit_input == "n":
                 continue 
